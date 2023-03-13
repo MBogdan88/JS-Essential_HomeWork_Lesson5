@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Завдання008-5</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #generateButton {
+            height: 5vh;
+            background-color: green;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            font-size: 24px;
+
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            flex-direction: column;
+        }
+
+        #interactivePanel {
+            position: relative;
+            height: 95vh;
+        }
+
+        .interactiveElement {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="generateButton">Generate</div>
+    <div id="interactivePanel"></div>
+    <script>
+        /*
+        Завдання:
+        Допишіть сценарій. Під час натискання на кнопку Generate за допомогою функції generateElement має створюватися 100 елементів та розміщуватись в
+        елемент interactivePanel. За повторного натискання на кнопку вміст interactivePanel має видалятися, після чого створюватися нові 100 елементів.
+        Усі елементи з класом interactiveElement мають підтримувати перетягування мишкою. За лівого кліку клавіші по елементу він має переміщатися
+        за курсором до моменту обтиснення кнопки мишки.
+        */
+
+        const interactivePanel = document.querySelector("#interactivePanel");
+        const generateButton = document.querySelector("#generateButton");
+
+        let elements = [];
+
+        const generateElements = () =>{
+            for(let i = 0; i < 100; i++){
+                const element = generateElement();
+                elements.push(element);
+                interactivePanel.appendChild(element);
+            }
+        }
+
+        const clearElements = () => {
+            elements.forEach(element => element.remove());
+            elements = [];
+        }
+
+        generateButton.addEventListener("click", () => {
+            clearElements();
+            generateElements();
+        });
+
+        interactivePanel.addEventListener("mousedown", event => {
+            if(event.target.classList.contains("interactiveElement")) {
+                const element = event.target;
+                const startX = event.pageX - element.offsetLeft;
+                const startY = event.pageY - element.offsetTop;
+
+                const moveElement = event => {
+                    element.style.left = event.pageX - startX + "px";
+                    element.style.top = event.pageY - startY + "px";    
+                };
+                interactivePanel.addEventListener("mousemove", moveElement);
+                interactivePanel.addEventListener("mouseup", () => {
+                    interactivePanel.removeEventListener("mousemove", moveElement);
+                });
+            }
+        });
+
+        // Створює та повертає div з класом interactiveElement з випадковою позицією у поточному вікні.
+        function generateElement() {
+            let div = document.createElement("div");
+            div.classList.add("interactiveElement");
+            let maxLeft = window.innerWidth - 50; // Ширина поточного документа.
+            let maxTop = window.innerHeight - 150; // Висота поточного документа.
+            div.style.top = getRandomValue(maxTop) + "px";
+            div.style.left = getRandomValue(maxLeft) + "px";
+            div.style.backgroundColor = getRandomColor();
+            return div;
+        }
+
+        // Повертає випадкове значення кольору.
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[getRandomValue(16)];
+            }
+            return color;
+        }
+
+        // Повертає випадкове значення від 0 до max.
+        function getRandomValue(max) {
+            return Math.floor(Math.random() * max);
+        }
+    </script>
+</body>
+
+</html>
